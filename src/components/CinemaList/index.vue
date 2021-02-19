@@ -1,74 +1,13 @@
 <template>
     <div class="cinema_body">
-        <ul>
+        <ul v-for="data in datalist" :key="data.cinemaId">
             <li>
                 <div>
-                    <span>大地影院</span>
-                    <span class="q"><span class="price">22.9</span>元起</span>
+                    <span>{{data.name}}</span>
+                    <span class="q"><span class="price">{{data.lowPrice * 0.01}}</span>元起</span>
                 </div>
                 <div class="address">
-                    <span>金州区大连经济技术开发区</span>
-                    <span>1732.2km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院</span>
-                    <span class="q"><span class="price">22.9</span>元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区</span>
-                    <span>1732.2km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院</span>
-                    <span class="q"><span class="price">22.9</span>元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区</span>
-                    <span>1732.2km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院</span>
-                    <span class="q"><span class="price">22.9</span>元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区</span>
-                    <span>1732.2km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院</span>
-                    <span class="q"><span class="price">22.9</span>元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区</span>
-                    <span>1732.2km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
+                    <span>{{data.address}}</span>
                 </div>
             </li>
         </ul>
@@ -76,8 +15,27 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-    name:'CinemaList'
+    name:'CinemaList',
+    data:function(){
+    return{
+        datalist:[]
+        }
+    },
+    mounted(){
+        var id = localStorage.getItem('cityId')
+        axios({
+        url:`https://m.maizuo.com/gateway?cityId=${id}&ticketFlag=1&k=6293628`,
+        headers:{
+            'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"110100"}',
+            'X-Host': 'mall.film-ticket.cinema.list'
+        }
+        }).then(res => {
+        //   console.log(res.data.data.cinemas)
+        this.datalist = res.data.data.cinemas
+    })
+    }
 }
 </script>
 

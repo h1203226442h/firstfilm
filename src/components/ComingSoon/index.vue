@@ -1,23 +1,11 @@
 <template>
     <div class="movie_body">
-        <ul>
+        <ul v-for="data in datalist" :key="data.filmId">
             <li>
-                <div class="pic_show"><img src="#" alt="#"></div>
+                <div class="pic_show"><img :src="data.poster" :alt="data.name"></div>
                 <div class="info_list">
-                    <h2>毒液:致命守护者</h2>
-                    <p><span class="person">2345</span>人想看</p>
-                    <p>主演:汤姆·哈迪,米歇尔·威廉姆斯</p>
-                    <p>2018-11-30上映</p>
-                </div>
-                <div class="btn_pre">预售</div>
-            </li>
-            <li>
-                <div class="pic_show"><img src="#" alt="#"></div>
-                <div class="info_list">
-                    <h2>毒液:致命守护者</h2>
-                    <p><span class="person">2345</span>人想看</p>
-                    <p>主演:汤姆·哈迪,米歇尔·威廉姆斯</p>
-                    <p>2018-11-30上映</p>
+                    <h2>{{data.name}}</h2>
+                    <p>{{data.actors | actorFilter}}</p>
                 </div>
                 <div class="btn_pre">预售</div>
             </li>
@@ -26,13 +14,37 @@
 </template>
 
 <script>
+import Vue from 'vue'
+Vue.filter('actorFilter',function(data){
+    var arr = data.map(item=>item.name)
+    arr = arr.join(',').split(',').slice(1).join(' ')
+    // var newarr = arr.slice(1).join(' ')
+    // console.log(newarr)
+    return arr
+})
 export default {
-    name:'ComingSoon'
+    name:'ComingSoon',
+    data(){
+        return{
+            datalist:[]
+        }
+    },
+    mounted(){
+        this.axios({
+            url:'https://m.maizuo.com/gateway?cityId=310100&pageNum=1&pageSize=10&type=2&k=1826414',
+            headers:{
+                'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"310100"}',
+                'X-Host': 'mall.film-ticket.film.list'
+            }
+        }).then(res=>{
+            this.datalist = res.data.data.films
+        })
+    }
 }
 </script>
 
 <style scoped>
-    #content .movie_body{flex:1;overflow: hidden;}
+    #content .movie_body{flex:1;overflow: auto;}
     .movie_body ul{margin:0 12px;overflow: hidden;}
     .movie_body ul li{margin-top:12px;display: flex;align-items: center;border-bottom:1px solid #e6e6e6;
     padding-bottom:10px}

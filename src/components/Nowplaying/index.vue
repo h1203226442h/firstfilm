@@ -1,21 +1,13 @@
 <template>
     <div class="movie_body">
-        <ul>
+        <ul v-for="data in datalist" :key="data.filmId">
             <li>
-                <div class="pic_show"><img src="#" alt="#"></div>
+                <div class="pic_show"><img :src="data.poster" :alt="data.name"></div>
                 <div class="info_list">
-                    <h2>无名之辈</h2>
-                    <p>观众评 <span class="grade">9.2</span></p>
-                    <p>主演:陈建斌,任素汐,潘斌龙</p>
-                </div>
-                <div class="btn_mall">购票</div>
-            </li>
-            <li>
-                <div class="pic_show"><img src="#" alt="#"></div>
-                <div class="info_list">
-                    <h2>无名之辈</h2>
-                    <p>观众评 <span class="grade">9.2</span></p>
-                    <p>主演:陈建斌,任素汐,潘斌龙</p>
+                    <h2>{{data.name}}</h2>
+                    <p v-if="data.grade">观众评 <span class="grade">{{data.grade}}</span></p>
+                    <p v-else>暂无评分</p>
+                    <p>{{data.actors | actorFilter}}</p>
                 </div>
                 <div class="btn_mall">购票</div>
             </li>
@@ -24,13 +16,37 @@
 </template>
 
 <script>
+import Vue from 'vue'
+Vue.filter('actorFilter',function(data){
+    var arr = data.map(item=>item.name)
+    arr = arr.join(',').split(',').slice(1).join(' ')
+    // var newarr = arr.slice(1).join(' ')
+    // console.log(newarr)
+    return arr
+})
 export default {
-    name:'Nowplaying'
+    name:'Nowplaying',
+    data(){
+        return{
+            datalist:[]
+        }
+    },
+    mounted(){
+        this.axios({
+            url:'https://m.maizuo.com/gateway?cityId=310100&pageNum=1&pageSize=10&type=1&k=2698040',
+            headers:{
+                'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"310100"}',
+                'X-Host': 'mall.film-ticket.film.list'
+            }
+        }).then(res=>{
+            this.datalist = res.data.data.films
+        })
+    }
 }
 </script>
 
 <style scoped>
-    #content .movie_body{flex:1;overflow: hidden;}
+    #content .movie_body{flex:1;overflow: auto;}
     .movie_body ul{margin:0 12px;overflow: hidden;}
     .movie_body ul li{margin-top:12px;display: flex;align-items: center;border-bottom:1px solid #e6e6e6;
     padding-bottom:10px}
