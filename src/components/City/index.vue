@@ -9,25 +9,20 @@
                 <li>深圳</li>
             </ul>
         </div>
-        <div class="city_sort">
-            <div>
-                <h2>A</h2>
-                <ul>
-                    <li>阿山</li>
-                </ul>
-            </div>
-            <div>
-                <h2>B</h2>
-                <ul>
-                    <li>北京</li>
+        <div class="city_sort" ref="city_sort">
+            <div v-for="(data,index) in datalist" :key="index">
+                <h2>{{data.index}}</h2>
+                <ul v-for="cities in data.list" :key="cities.cityId" @click="handleGet(cities.cityId,cities.name)">
+                    <li>{{cities.name}}</li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="city_index">
         <ul>
-            <li>A</li>
-            <li>B</li>
+            <li v-for="(city,index) in datalist" :key="index" @click="handleToIndex(index)">
+                {{city.index}}
+            </li>
         </ul>
     </div>
   </div>
@@ -35,7 +30,55 @@
 
 <script>
 export default {
-    name:'City'
+    name:'City',
+    data(){
+        return {
+            datalist:[]
+        }
+    },
+    mounted(){
+        this.axios({
+            url:'https://m.maizuo.com/gateway?k=4903366',
+            headers:{
+                'X-Client-Info':' {"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"110100"}',
+                'X-Host': 'mall.film-ticket.city.list'
+            }
+        }).then(res=>{
+            console.log(res.data.data.cities)
+            this.datalist = this.handleFilter(res.data.data.cities)
+        })
+    },
+    methods:{
+        handleFilter(data){
+            var zmArr = []
+            for(var i = 65;i < 91;i++){
+                zmArr.push(String.fromCharCode(i))
+            }
+            console.log(zmArr)
+            var cityArr = []
+            for(var j = 0;j < zmArr.length;j++){
+                var arr = data.filter(item=>item.pinyin.substring(0,1) === zmArr[j].toLowerCase())
+                if(arr.length > 0){
+                    cityArr.push({
+                        index:zmArr[j],
+                        list:arr
+                    })
+                }
+            }
+            console.log(cityArr)
+            return cityArr
+        },
+        handleToIndex(index){
+            var h2 = this.$refs.city_sort.getElementsByTagName("h2")
+            this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
+        },
+        handleGet(id,name){
+            console.log(id,name)
+            localStorage.setItem('cityId',id)
+            localStorage.setItem('cityName',name)
+            this.$router.push('/movie')
+        }
+    }
 }
 </script>
 
@@ -50,7 +93,7 @@ export default {
     .city_body .city_hot{margin-top:20px}
     .city_body .city_hot h2{padding-left:15px;line-height: 30px;font-size:14px;background: #f0f0f0;
     font-weight: normal;}
-    .city_body .city_hot ul li{float: left;background: #fff;width: 29%;height: 33px;text-align: center;
+    .city_body .city_hot ul li{float: left;background: #fff;width: 25%;height: 33px;text-align: center;
     margin-top:15px;margin-left:3%;padding:0 4px;border:1px solid #f0f0f0;line-height: 33px;}
     .city_body .city_sort div{margin-top:20px;}
     .city_body .city_sort h2{padding-left:15px;line-height: 30px;font-size:14px;background: #f0f0f0;

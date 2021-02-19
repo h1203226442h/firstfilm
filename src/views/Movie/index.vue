@@ -4,7 +4,7 @@
             <div id="content">
                 <div class="movie_menu">
                     <router-link tag="div" class="city_name" to="/movie/city">
-                        <span>成都</span><i class="iconfont icon-sanjiao"></i>
+                        <span>{{cityname}}</span><i class="iconfont icon-sanjiao"></i>
                     </router-link>
                     <div class="hot_switch">
                         <router-link tag="div" class="hot_item" to="/movie/nowplaying">正在热映</router-link>
@@ -27,9 +27,17 @@ import Header from '@/components/Header'
 import Tabbar from '@/components/Tabbar'
 export default {
     name:'Movie',
+    data(){
+        return {
+            cityname:''
+        }
+    },
     components:{
         Header,
         Tabbar
+    },
+    mounted(){
+        this.cityname = localStorage.getItem('cityName')
     }
 }
 </script>
