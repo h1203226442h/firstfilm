@@ -4,9 +4,9 @@
             <ul>
                 <li class="pullDown">{{this.pullDown}}</li>
                 <li v-for="data in datalist" :key="data.filmId">
-                    <div class="pic_show" @tap="handleToDetail"><img :src="data.poster" :alt="data.name"></div>
+                    <div class="pic_show" @tap="handleToDetail(data.filmId)"><img :src="data.poster" :alt="data.name"></div>
                     <div class="info_list">
-                        <h2>{{data.name}}</h2>
+                        <h2 @tap="handleToDetail(data.filmId)">{{data.name}}</h2>
                         <p v-if="data.grade">观众评 <span class="grade">{{data.grade}}</span></p>
                         <p v-else>暂无评分</p>
                         <p>{{data.actors | actorFilter}}</p>
@@ -82,8 +82,8 @@ export default {
         })
     },
     methods:{
-        handleToDetail(){
-            console.log('handleToDetail')
+        handleToDetail(movieId){
+            this.$router.push('/movie/detail/1/'+ movieId) //去创建动态路由
         }
     }
 }

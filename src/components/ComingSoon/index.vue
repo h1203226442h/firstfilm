@@ -2,7 +2,7 @@
     <div class="movie_body">
         <ul v-for="data in datalist" :key="data.filmId">
             <li>
-                <div class="pic_show"><img :src="data.poster" :alt="data.name"></div>
+                <div class="pic_show"><img :src="data.poster" :alt="data.name" @tap="handleToDetail(data.filmId)"></div>
                 <div class="info_list">
                     <h2>{{data.name}}</h2>
                     <p>{{data.actors | actorFilter}}</p>
@@ -39,6 +39,11 @@ export default {
         }).then(res=>{
             this.datalist = res.data.data.films
         })
+    },
+    methods:{
+        handleToDetail(movieId){
+            this.$router.push('/movie/detail/2/'+ movieId) //去创建动态路由
+        }
     }
 }
 </script>
