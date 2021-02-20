@@ -4,7 +4,7 @@
             <li>
                 <div>
                     <span>{{data.name}}</span>
-                    <span class="q"><span class="price">{{data.lowPrice * 0.01}}</span>元起</span>
+                    <span class="q"><span class="price">{{(data.lowPrice * 0.01).toFixed(1)}}</span>元起</span>
                 </div>
                 <div class="address">
                     <span>{{data.address}}</span>
@@ -23,8 +23,9 @@ export default {
         datalist:[]
         }
     },
-    mounted(){
-        var id = localStorage.getItem('cityId')
+    activated(){
+        var id = window.localStorage.getItem('cityId')
+        // var id = $store.state.city.cityId
         axios({
         url:`https://m.maizuo.com/gateway?cityId=${id}&ticketFlag=1&k=6293628`,
         headers:{

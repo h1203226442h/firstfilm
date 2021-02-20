@@ -1,14 +1,14 @@
 <template>
   <div class="city_body">
     <div class="city_list">
-        <div class="city_hot">
+        <!-- <div class="city_hot">
             <h2>热门城市</h2>
             <ul class="clearfix">
                 <li>上海</li>
                 <li>北京</li>
                 <li>深圳</li>
             </ul>
-        </div>
+        </div> -->
         <div class="city_sort" ref="city_sort">
             <div v-for="(data,index) in datalist" :key="index">
                 <h2>{{data.index}}</h2>
@@ -37,16 +37,24 @@ export default {
         }
     },
     mounted(){
-        this.axios({
-            url:'https://m.maizuo.com/gateway?k=4903366',
-            headers:{
-                'X-Client-Info':' {"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"110100"}',
-                'X-Host': 'mall.film-ticket.city.list'
-            }
-        }).then(res=>{
-            console.log(res.data.data.cities)
-            this.datalist = this.handleFilter(res.data.data.cities)
-        })
+        var cityList = window.localStorage.getItem('cityList');
+        if(cityList){
+            this.datalist = this.handleFilter(JSON.parse(cityList))
+        }
+        else{
+            this.axios({
+                url:'https://m.maizuo.com/gateway?k=4903366',
+                headers:{
+                    'X-Client-Info':' {"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"110100"}',
+                    'X-Host': 'mall.film-ticket.city.list'
+                }
+            }).then(res=>{
+                console.log(res.data.data.cities)
+                this.datalist = this.handleFilter(res.data.data.cities)
+                window.localStorage.setItem("cityList",JSON.stringify(res.data.data.cities))
+            })
+        }
+        
     },
     methods:{
         handleFilter(data){
@@ -72,10 +80,11 @@ export default {
             var h2 = this.$refs.city_sort.getElementsByTagName("h2")
             this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
         },
-        handleGet(id,name){
-            console.log(id,name)
-            localStorage.setItem('cityId',id)
-            localStorage.setItem('cityName',name)
+        handleGet(cityId,name){
+            console.log(cityId,name)
+            this.$store.commit('city/CITY_INFO',{cityId,name})
+            window.localStorage.setItem('cityId',cityId)
+            window.localStorage.setItem('cityName',name)
             this.$router.push('/movie')
         }
     }
