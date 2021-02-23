@@ -21,6 +21,7 @@
 <script>
 import BScroll from 'better-scroll'
 import Vue from 'vue'
+import { Indicator } from 'mint-ui'
 Vue.filter('actorFilter',function(data){
     var arr = data.map(item=>item.name)
     arr = arr.join(',').split(',').slice(1).join(' ')
@@ -33,10 +34,17 @@ export default {
     data(){
         return{
             datalist:[],
-            pullDown:''
+            pullDown:'',
+            isNowPlayingPage:1,
+            isShow:true,
+            loading:false
         }
     },
     mounted(){
+        Indicator.open({
+            text:'加载中...',
+            spinnerType:'fading-circle'
+        })
         this.axios({
             url:'https://m.maizuo.com/gateway?cityId=310100&pageNum=1&pageSize=10&type=1&k=2698040',
             headers:{
@@ -45,6 +53,7 @@ export default {
             }
         }).then(res=>{
             this.datalist = res.data.data.films
+            Indicator.close()
             this.$nextTick(()=>{
                 var scroll = new BScroll(this.$refs.movie_body,{
                     tap:true,
@@ -73,6 +82,20 @@ export default {
                                 this.pullDown = ''
                             },1000)
                             }
+                            if(scroll.maxScrollY > pos.y + 30){
+                                console.log("上拉刷新")
+                                this.isNowPlayingPage++
+                                    this.axios({
+                                        url:`https://m.maizuo.com/gateway?cityId=310100&pageNum=${this.isNowPlayingPage}&pageSize=10&type=1&k=2698040`,
+                                        headers:{
+                                            'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"1612017278652186488930305","bc":"310100"}',
+                                            'X-Host': 'mall.film-ticket.film.list'
+                                        }
+                                    }).then(res => {
+                                        this.datalist = [...this.datalist, ...res.data.data.films]
+                                        scroll.refresh();
+                                    })
+                            }
                         }
                     })
                     
@@ -84,7 +107,7 @@ export default {
     methods:{
         handleToDetail(movieId){
             this.$router.push('/movie/detail/1/'+ movieId) //去创建动态路由
-        }
+        },
     }
 }
 </script>
